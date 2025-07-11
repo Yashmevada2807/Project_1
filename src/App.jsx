@@ -4,6 +4,8 @@ import LoginPage from './components/pages/LoginPage'
 import Dashboard from './components/pages/Dashboard'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import ProductPage from './components/pages/ProductPage'
+import ProductDetailPage from './components/pages/ProductDetailPage'
 
 function App() {
   
@@ -16,6 +18,7 @@ function App() {
         <Route path='/' element={isAuthenticated ? <Navigate to='/dashboard'/> : <LoginPage />} />
         <Route path='/signin' element={isAuthenticated ? <Dashboard/> : <SignInPage />} />
         <Route path='/dashboard' element={isAuthenticated ? <Dashboard /> : <Navigate to='/'/>} />
+        <Route path={`/products/:id`}id element={<ProductDetailPage/>}/>
       </Routes>
     </div>
 
