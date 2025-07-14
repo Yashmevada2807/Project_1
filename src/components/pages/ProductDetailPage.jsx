@@ -1,10 +1,13 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { AddToCartFunctionality } from '../../features/product/productSlice'
+import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
 const ProductDetailPage = () => {
 
+    const { cartProducts } = useSelector(state => state.products)
+    const dispatch = useDispatch()
     const { id } = useParams()
     const [product, setProduct] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -17,7 +20,21 @@ const ProductDetailPage = () => {
         }
         fetchProductDetailById()
     }, [id])
+    useEffect(() => {
+        
+    })
 
+    const HandleAddToCart = () => {
+        const ProductData = {
+            id: product.id,
+            title: product.title,
+            image: product.images,
+            description: product.description,
+            price: product.price,
+            discount: product.discountPercentage
+        }
+        dispatch(AddToCartFunctionality(ProductData))
+    }
 
 
     if (isLoading) return <p className='text-6xl text-white flex justify-center items-center'>Loading product...</p>;
@@ -28,14 +45,14 @@ const ProductDetailPage = () => {
     const discountedPrice = product.price * [product.discountPercentage / 100]
     const finalPrice = product.price - discountedPrice
     return (
-        <div className='w-full  p-2 '>
-            <div className=" w-full p-8 grid grid-cols-1 md:grid-cols-2  gap-8 bg-[#250e32]">
+        <div className='w-full bg-[#250e32]'>
 
+            <div className=" max-w-full mx-4 my-4 p-4 md:mx-2 md:my-10 md:p-2 lg:mx-35 lg:my-15 lg:p-10  shadow-2xl rounded-lg grid  md:grid-cols-1 lg:grid-cols-2 bg-[#2c113b] gap-8 ">
                 <div className=''>
                     <img
                         src={product.images[0]}
                         alt={product.title}
-                        className="w-full h-full  p-10 rounded-lg object-cover bg-[#060616]"
+                        className=" md:w-fit lg:w-full lg:h-full p-10 rounded-lg object-cover bg-[#060616]"
                     />
                 </div>
 
@@ -56,21 +73,6 @@ const ProductDetailPage = () => {
                         ))}
                     </div>
                     <p className="mt-4 text-gray-500">{product.description}</p>
-
-                    {/* <div className="mt-6">
-                        <h4 className="text-sm font-medium text-gray-900">Color</h4>
-                        <div className="flex items-center mt-2 space-x-2">
-                            {colors.map((c, i) => (
-                                <button
-                                    key={i}
-                                    className="w-6 h-6 rounded-full border border-gray-300"
-                                    style={{ backgroundColor: c }}
-                                />
-                            ))}
-                        </div>
-                    </div> */}
-
-
 
                     <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="border-[1px] border-[#842093] p-4 rounded-md">
@@ -96,7 +98,7 @@ const ProductDetailPage = () => {
                         <button className="mt-6 w-1/2 bg-[#842093] hover:bg-[#6e3f75] hover:text-gray-100 text-white px-6 py-3">
                             Buy Now
                         </button>
-                        <button className="mt-6 w-1/2 bg-gray-700 text-white px-6 py-3  hover:bg-[#383c56]">
+                        <button onClick={HandleAddToCart} className="mt-6 w-1/2 bg-gray-700 text-white px-6 py-3  hover:bg-[#383c56]">
                             Add to bag
                         </button>
                     </div>

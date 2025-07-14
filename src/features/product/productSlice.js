@@ -16,6 +16,7 @@ export const productSlice = createSlice({
     name: 'products',
     initialState: {
         products: [],
+        cartProducts: [],
         totalProduct: 0,
         productPerPage: 20,
         isLoading: true,
@@ -25,9 +26,17 @@ export const productSlice = createSlice({
         errors: {}
     },
     reducers: {
+        AddToCartFunctionality: (state, action) => {
+
+            const Product = action.payload
+            const checkProductExist = state.cartProducts.find(item => item.id === Product.id)
+            if (!checkProductExist) {
+                state.cartProducts.push(Product)
+            }
+        },
         removeProductsAfterLogout: (state) => {
-                state.products = []
-                state.totalProduct = 0,
+            state.products = []
+            state.totalProduct = 0,
                 state.isLoading = true,
                 state.status = 'idle',
                 state.hasMore = true,
@@ -63,9 +72,9 @@ export const productSlice = createSlice({
 export const userSlice = createSlice({
     name: 'users',
     initialState: {
-        users:[],
-        currentuser:  null,
-        isAuthenticated:  false,
+        users: [],
+        currentuser: null,
+        isAuthenticated: false,
     },
     reducers: {
         setUsers: (state, action) => {
@@ -87,6 +96,6 @@ export const userSlice = createSlice({
 })
 
 export const { setUsers, setCurrentUser, setIsAuthenticated, logout } = userSlice.actions
-export const { removeProductsAfterLogout} = productSlice.actions
+export const { AddToCartFunctionality, removeProductsAfterLogout } = productSlice.actions
 export const productReducer = productSlice.reducer
 export const userReducer = userSlice.reducer

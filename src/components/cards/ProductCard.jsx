@@ -26,8 +26,8 @@ const ProductCard = ({ product }) => {
   }, [images.length])
 
   return (
-    <div className="flex relative  flex-col bg-[#250e32]  rounded-md shadow overflow-hidden min-w-[320px] min-h-[480px] max-w-[300px] h-[520px] sm:w-[340px] md:w-[350px] lg:w-[320px] xl:w-[320px] ">
-      <div className="image group m-1  border-[1px] border-[#551b5e] bg-[#060616]  relative overflow-hidden  py-1  flex items-center justify-center  ">
+    <div className="flex relative  shadow-2xl flex-col bg-[#250e32]  rounded-md  overflow-hidden min-w-[320px] min-h-[480px] max-w-[300px] h-[520px] sm:w-[340px] md:w-[350px] lg:w-[320px] xl:w-[320px] ">
+      <div className="image group m-1   bg-[#060616]  relative overflow-hidden  py-1  flex items-center justify-center  ">
         {images && images.length > 0 ? (
           <div className="flex  transition-transform duration-500 ease-in-out h-full"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
