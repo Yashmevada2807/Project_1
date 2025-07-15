@@ -3,10 +3,12 @@ import React, { useEffect, useState } from 'react'
 import { AddToCartFunctionality } from '../../features/product/productSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
+import { Bounce, toast } from 'react-toastify'
 
 const ProductDetailPage = () => {
 
-    const { cartProducts } = useSelector(state => state.products)
+    const { CartProducts } = useSelector(state => state.cart)
+    const { currentuser } = useSelector(state => state.users)
     const dispatch = useDispatch()
     const { id } = useParams()
     const [product, setProduct] = useState(null)
@@ -21,7 +23,7 @@ const ProductDetailPage = () => {
         fetchProductDetailById()
     }, [id])
     useEffect(() => {
-        
+
     })
 
     const HandleAddToCart = () => {
@@ -33,7 +35,42 @@ const ProductDetailPage = () => {
             price: product.price,
             discount: product.discountPercentage
         }
-        dispatch(AddToCartFunctionality(ProductData))
+        const userId = currentuser.id
+        const userCart = CartProducts[userId] || []
+
+        const checkExistenceOfProduct = userCart.find(item => item.id === ProductData.id)
+
+        if(!checkExistenceOfProduct){
+
+            dispatch(AddToCartFunctionality({
+                userId: currentuser.id,
+                product: ProductData,
+            }))
+            toast.success('Added to Cart Successfully', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                theme:'colored',
+                transition: Bounce,
+            });
+        }else {
+            toast.warn('Product is Already in Cart ', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                theme:'colored',
+                transition: Bounce,
+            });
+        }
+
     }
 
 
