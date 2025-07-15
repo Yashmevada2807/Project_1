@@ -25,7 +25,7 @@ function App() {
         <Route path='/signin' element={isAuthenticated ? <Dashboard /> : <SignInPage />} />
         <Route path='/dashboard' element={isAuthenticated ? <Dashboard /> : <Navigate to='/' />} />
         <Route path={`/products/:id`} element={isAuthenticated ? <ProductDetailPage /> : <Navigate to='/' />} />
-        <Route path={`/cart`} element={isAuthenticated ? <ProductCartPage/> : null} />
+        <Route path={`/cart`} element={isAuthenticated ? <ProductCartPage/> : <Navigate to='/'/>} />
       </Routes>
       
     </div>
