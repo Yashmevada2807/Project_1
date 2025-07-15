@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { logout, removeProductsAfterLogout } from '../../features/product/productSlice'
@@ -10,10 +10,20 @@ const LogOutModal = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate
 
+  useEffect(() => {
+    if(showModal){
+      document.body.style.overflow = 'hidden'
+    }else{
+      document.body.style.overflow = ''
+    }
+
+    return () => {
+      document.body.style.overflow = ''
+    }
+  },[showModal])
   const handleLogOutModal = () => {
     setShowModal(true)
   }
-
   const CancelLogOut = () => {
     setShowModal(false)
   }
@@ -21,9 +31,7 @@ const LogOutModal = () => {
   const ContinueLogOut = () => {
     dispatch(logout())
     dispatch(removeProductsAfterLogout())
-    persistor.purge().then(() => {
-      navigate('/')
-    })
+    navigate("/")
   }
 
   return (

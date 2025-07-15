@@ -46,7 +46,7 @@ const ProductList = () => {
                 })}
             </div>
             <div className=' text-3xl text-gray-400'>
-                <div >{isLoading ? <p>Loading More Products...</p> : null}</div>
+                <div >{products.length === 0 && isLoading ? <p>Loading Products...</p> : <p>Loading More Products...</p>}</div>
                 <div>{!hasMore ? <p>No More Products Available.</p> : null}</div>
             </div>
         </div>
