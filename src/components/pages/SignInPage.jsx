@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setUsers, setCurrentUser, setIsAuthenticated } from '../../features/product/productSlice'
 import { Link } from 'react-router-dom'
-
+import bcrypt from 'bcryptjs'
 
 const SignInPage = () => {
 
@@ -69,14 +69,17 @@ const SignInPage = () => {
         validate,
         validateOnBlur: false,
         validateOnChange: false,
-        onSubmit: values => {
+        onSubmit: async values => {
+
+            const salt = bcrypt.genSaltSync(10)
+            const hashedPassword = bcrypt.hashSync(values.password, salt)
             const newUser = {
                 id: Date.now(),
                 name: values.name,
                 email: values.email,
                 phone: values.phone,
                 username: values.username,
-                password: values.password
+                password: hashedPassword,
             }
             dispatch(setUsers(newUser))
             // localStorage.setItem('users', JSON.stringify([...users, newUser]))

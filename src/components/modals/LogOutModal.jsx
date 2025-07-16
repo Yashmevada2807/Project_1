@@ -11,16 +11,18 @@ const LogOutModal = () => {
   const navigate = useNavigate
 
   useEffect(() => {
-    if(showModal){
+    if (showModal) {
       document.body.style.overflow = 'hidden'
-    }else{
+    } else {
       document.body.style.overflow = ''
     }
 
     return () => {
       document.body.style.overflow = ''
     }
-  },[showModal])
+  }, [showModal])
+
+  
   const handleLogOutModal = () => {
     setShowModal(true)
   }

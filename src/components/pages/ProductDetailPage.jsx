@@ -1,15 +1,17 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { AddToCartFunctionality } from '../../features/product/productSlice'
+import { AddToCartFunctionality, updateCartQuantity } from '../../features/product/productSlice'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { Bounce, toast } from 'react-toastify'
 
 const ProductDetailPage = () => {
 
     const { CartProducts } = useSelector(state => state.cart)
     const { currentuser } = useSelector(state => state.users)
+    const [toggleCartButton, setToggleCartButton] = useState('Add To Cart')
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const { id } = useParams()
     const [product, setProduct] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -22,9 +24,12 @@ const ProductDetailPage = () => {
         }
         fetchProductDetailById()
     }, [id])
-    useEffect(() => {
 
-    })
+
+
+    useEffect(() => {
+        setToggleCartButton('Add To Cart')
+    }, [])
 
     const HandleAddToCart = () => {
         const ProductData = {
@@ -40,37 +45,64 @@ const ProductDetailPage = () => {
 
         const checkExistenceOfProduct = userCart.find(item => item.id === ProductData.id)
 
-        if(!checkExistenceOfProduct){
+        if (checkExistenceOfProduct) {
 
-            dispatch(AddToCartFunctionality({
-                userId: currentuser.id,
-                product: ProductData,
+            dispatch(updateCartQuantity({
+                userId: userId,
+                productId: checkExistenceOfProduct.id,
+                quantity: checkExistenceOfProduct.quantity + 1
             }))
             toast.success('Added to Cart Successfully', {
                 position: "top-right",
                 autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: true,
-                progress: undefined,
-                theme:'colored',
+                theme: 'colored',
                 transition: Bounce,
-            });
-        }else {
-            toast.warn('Product is Already in Cart ', {
+            })
+
+        } else {
+            dispatch(AddToCartFunctionality({
+                userId: userId,
+                product: ProductData
+            }))
+            toast.success('Added to Cart Successfully', {
                 position: "top-right",
                 autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: true,
-                progress: undefined,
-                theme:'colored',
+                theme: 'colored',
                 transition: Bounce,
-            });
+            })
         }
 
+        setToggleCartButton('View Cart')
+
+    }
+
+    const handleviewCart = () => {
+        navigate('/cart')
+    }
+
+    const HandleCartButton = () => {
+        if (toggleCartButton === 'Add To Cart') {
+            HandleAddToCart()
+        } else {
+            handleviewCart()
+        }
+    }
+
+    const HandleBuyButton = () => {
+        const ProductData = {
+            id: product.id,
+            title: product.title,
+            image: product.images,
+            description: product.description,
+            price: product.price,
+            discount: product.discountPercentage,
+            quantity: product.quantity
+        }
+        dispatch(AddToCartFunctionality({
+            userId: currentuser.id,
+            product: ProductData,
+        }))
+        navigate('/cart')
     }
 
 
@@ -132,11 +164,11 @@ const ProductDetailPage = () => {
                     <p className="text-3xl text-gray-400 font-semibold mt-4 ">$<span className='line-through'>{product.price}</span> <span className='text-[15px]  text-green-400 font-light'>- {product.discountPercentage}% Off</span></p>
                     <p className="text-2xl px-1 font-bold pt-2  text-blue-500 "> ${finalPrice.toFixed(2)}<span className='text-sm  text-gray-400 font-light'> Including tax</span></p>
                     <div className='w-full pt-12 flex'>
-                        <button className="mt-6 w-1/2 bg-[#842093] hover:bg-[#6e3f75] hover:text-gray-100 text-white px-6 py-3">
+                        <button onClick={HandleBuyButton} className="mt-6 w-1/2 bg-[#842093] hover:bg-[#6e3f75] hover:text-gray-100 text-white px-6 py-3">
                             Buy Now
                         </button>
-                        <button onClick={HandleAddToCart} className="mt-6 w-1/2 bg-gray-700 text-white px-6 py-3  hover:bg-[#383c56]">
-                            Add to bag
+                        <button onClick={HandleCartButton} className="mt-6 w-1/2 bg-gray-700 text-white px-6 py-3  hover:bg-[#383c56]">
+                            {toggleCartButton}
                         </button>
                     </div>
 

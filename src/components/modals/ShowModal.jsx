@@ -3,7 +3,10 @@ import React from 'react'
 const ShowModal = ({ CancelLogOut, ContinueLogOut }) => {
     return (
         <>
-            <div className="w-full fixed z-2 left-0 bottom-0 right-0 top-0 bg-gray-950 opacity-70">
+            <div 
+            onClick={CancelLogOut}
+            className="w-full fixed z-2 left-0 bottom-0 right-0 top-0 bg-gray-950 opacity-70"
+            >
 
             </div>
                 <div className='w-[480px] max-w-[500px] border-[1px] border-[#491664] fixed z-16 top-[50%] left-[50%] -translate-1/2  bg-[#190524] rounded-2xl  px-12 py-20'>

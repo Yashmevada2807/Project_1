@@ -1,13 +1,28 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { FadeLoader } from 'react-spinners'
+import { AddToCartFunctionality, updateCartQuantity } from '../../features/product/productSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { Bounce, toast } from 'react-toastify'
+
+
 
 const ProductCard = ({ product }) => {
 
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [toggleCartBtn, setToggleCartBtn] = useState('Add To Cart')
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const { currentuser } = useSelector(state => state.users)
+  const { CartProducts } = useSelector(state => state.cart)
   const images = product.images
-  // console.log(images);
 
+  const userId = currentuser?.id
+  const userCart = CartProducts[userId] || []
 
+  useEffect(() => {
+    setToggleCartBtn('Add To Cart')
+  }, [])
 
   const prev = () => {
     setCurrentIndex(prev => prev === 0 ? images.length - 1 : prev - 1)
@@ -24,6 +39,81 @@ const ProductCard = ({ product }) => {
 
     return () => clearInterval(interval)
   }, [images.length])
+
+  const HandleAddToCart = () => {
+
+    const checkExistenceOfProduct = userCart.find(item => item.id === product.id)
+
+    if (checkExistenceOfProduct) {
+
+      dispatch(updateCartQuantity({
+        userId: currentuser.id,
+        productId: product.id,
+        quantity: checkExistenceOfProduct.quantity + 1
+      }))
+      toast.success('Added to Cart Successfully', {
+        position: "top-right",
+        autoClose: 2000,
+        theme: 'colored',
+        transition: Bounce,
+      })
+    } else {
+      const ProductData = {
+        id: product.id,
+        title: product.title,
+        image: product.images,
+        description: product.description,
+        price: product.price,
+        discount: product.discountPercentage,
+        quantity: product.quantity
+      }
+
+      dispatch(AddToCartFunctionality(
+        {
+          userId: currentuser.id,
+          product: ProductData,
+        }))
+      toast.success('Added to Cart Successfully', {
+        position: "top-right",
+        autoClose: 2000,
+        theme: 'colored',
+        transition: Bounce,
+      })
+
+    }
+
+    setToggleCartBtn('View Cart')
+
+  }
+
+  const handleViewCart = () => {
+    navigate('/cart')
+  }
+
+  const HandleCartButtonClick = () => {
+    if (toggleCartBtn === 'Add To Cart') {
+      HandleAddToCart()
+    } else {
+      handleViewCart()
+    }
+  }
+
+  const handleBuyButtonClick = () => {
+    const ProductData = {
+      id: product.id,
+      title: product.title,
+      image: product.images,
+      description: product.description,
+      price: product.price,
+      discount: product.discountPercentage,
+      quantity: product.quantity
+    }
+    dispatch(AddToCartFunctionality({
+      userId: currentuser.id,
+      product: ProductData,
+    }))
+    navigate('/cart')
+  }
 
   return (
     <div className="flex relative  shadow-2xl flex-col bg-[#250e32]  rounded-md  overflow-hidden min-w-[320px] min-h-[480px] max-w-[300px] h-[520px] sm:w-[340px] md:w-[350px] lg:w-[320px] xl:w-[320px] ">
@@ -59,11 +149,22 @@ const ProductCard = ({ product }) => {
           </div>
           <h1 className='text-gray-500 text-sm pt-1'>{product.brand}</h1>
         </div>
-        <div className="btn absolute bottom-0  w-full flex justify-center items-center border-white">
-          <button className='bg-[#47205c] hover:bg-[#332343] hover:text-gray-100 transition-opacity ease-in duration-400 text-gray-300 text-md w-full px-8 py-3'>BuyNow</button>
-        </div>
       </Link>
-    </div>
+      <div className="btn absolute bottom-0  w-full flex justify-center items-center border-white">
+
+        <button
+          onClick={handleBuyButtonClick}
+          className='bg-[#710c8a] hover:bg-[#624171] hover:text-gray-100 transition-opacity ease-in duration-400 text-gray-300 text-md w-full px-8 py-3' >
+          BuyNow
+        </button>
+
+        <button
+          onClick={HandleCartButtonClick}
+          className='bg-[#580d6b] hover:bg-[#754581] hover:text-gray-100 transition-opacity ease-in duration-400 text-gray-300 text-md w-full px-8 py-3'>
+          {toggleCartBtn}
+        </button>
+      </div>
+    </div >
   )
 }
 

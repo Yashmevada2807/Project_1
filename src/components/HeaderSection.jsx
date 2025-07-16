@@ -4,20 +4,38 @@ import { removeProductFromCart } from '../features/product/productSlice'
 import { MdShoppingCart } from 'react-icons/md'
 import LogOutModal from './modals/LogOutModal'
 import '../style.css'
+import { useState } from 'react'
+import ShowRemoveModal from './modals/ShowRemoveModal'
 
 const HeaderSection = () => {
     const dispatch = useDispatch()
     const { currentuser } = useSelector(state => state.users)
     const { CartProducts } = useSelector(state => state.cart)
 
+    const [showRemoveModal, setShowRemoveModal] = useState(false)
+    const [productToRemove, setProductToRemove] = useState(null)
+
     const userId = currentuser?.id
     const userCart = CartProducts[userId] || []
-    // console.log(CartProducts.price);
 
     const totalCart = userCart.length
 
-    const removeItemFromCart = (productId) => {
-        dispatch(removeProductFromCart({ userId, productId }))
+    const displayModal = (productId) => {
+        setProductToRemove(productId)
+        setShowRemoveModal(true)
+    }
+
+    const cancelRemoveBtn = () => {
+        setProductToRemove(null)
+        setShowRemoveModal(false)
+    }
+
+    const acceptRemoveBtn = () => {
+        if (productToRemove) {
+            dispatch(removeProductFromCart({ userId, productId: productToRemove }))
+        }
+        setProductToRemove(null)
+        setShowRemoveModal(false)
     }
 
     return (
@@ -31,13 +49,13 @@ const HeaderSection = () => {
             <div className="buttonFunctionalities flex justify-center items-center gap-6  relative ">
                 <div className="relative group">
                     <div className="w-[45px] h-[35px] p-2 relative cursor-pointer text-sm rounded-full text-gray-100">
-                        <div className="absolute top-0 right-0 flex items-center justify-center bg-[#f415f4] text-white text-[11px] font-bold rounded-full w-5 h-5 translate-x-1/2 -translate-y-1/2">
-                            {totalCart}
+                        <div className={`absolute top-0 right-0 flex items-center justify-center ${totalCart === 0 ? '' : 'bg-[#f415f4] rounded-full'}  text-white text-[11px] font-bold  w-5 h-5 translate-x-1/2 -translate-y-1/2`}>
+                            {totalCart === 0 ? null : totalCart}
                         </div>
-                        <MdShoppingCart style={{ width: '45px', height: '22px' }} />
+                        <Link to="/cart">
+                            <MdShoppingCart style={{ width: '45px', height: '22px' }} />
+                        </Link>
                     </div>
-
-
 
                     <div className="absolute -right-30 top-full mt-2 w-[320px] bg-[#240634] rounded-lg shadow-lg border border-[#4e1a69] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                         <div className="p-4 max-h-[400px] overflow-y-auto custom-scrollbar">
@@ -64,7 +82,7 @@ const HeaderSection = () => {
                                             </div>
                                         </div>
                                         <button
-                                            onClick={() => removeItemFromCart(product.id)}
+                                            onClick={() => displayModal(product.id)}
                                             className="text-xs text-red-500 hover:text-red-700"
                                         >
                                             Remove
@@ -91,6 +109,10 @@ const HeaderSection = () => {
                     <LogOutModal />
                 </div>
             </div>
+
+            {showRemoveModal && (
+                <ShowRemoveModal acceptRemoveBtn={acceptRemoveBtn} cancelRemoveBtn={cancelRemoveBtn} />
+            )}
         </div>
     )
 }
